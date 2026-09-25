@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Carrera;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
+
 
 
 
@@ -40,7 +42,8 @@ class CarreraController extends Controller
     'estado' => 'required|boolean',
     ]);
     Carrera::create($validated);
-    return redirect()->route('carreras.index');
+    return redirect()->route('carreras.index')
+    ->with('success', 'Carrera creada correctamente.');
     }
 
 
@@ -55,24 +58,42 @@ class CarreraController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Carrera $carrera)
     {
-        //
+    return Inertia::render('Carreras/Edit', [
+    'carrera' => $carrera,
+    ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Carrera $carrera)
     {
-        //
+    $validated = $request->validate(['codigo' => [
+    'required',
+    'string',
+    'max:10',
+    Rule::unique('carreras', 'codigo')->ignore($carrera->id),
+    ],
+    'nombre' => 'required|string|max:150',
+    'estado' => 'required|boolean',
+    ]);
+    $carrera->update($validated);
+    return redirect()->route('carreras.index')
+    ->with('success', 'Carrera actualizada correctamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Carrera $carrera)
     {
-        //
+    $carrera->delete();
+    return redirect()->route('carreras.index')
+    ->with('success', 'Carrera eliminada correctamente.');
     }
+
+
+
 }
