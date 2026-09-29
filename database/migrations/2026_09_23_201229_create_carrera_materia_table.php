@@ -8,13 +8,17 @@ return new class extends Migration
  {
  Schema::create('carrera_materia', function (Blueprint $table) {
  $table->id();
+
  $table->foreignId('carrera_id')
  ->constrained('carreras')
  ->cascadeOnDelete();
+
  $table->foreignId('materia_id')
  ->constrained('materias')
  ->cascadeOnDelete();
+
  $table->timestamps();
+ 
  $table->unique(['carrera_id', 'materia_id']);
  });
  }

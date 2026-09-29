@@ -8,5 +8,14 @@ class Carrera extends Model
 {
  use HasFactory;
  protected $fillable = ['codigo', 'nombre', 'estado'];
+ public function materias()
+{
+ return $this->belongsToMany(Materia::class, 'carrera_materia')
+ ->withTimestamps();
 }
+
+}
+
+
+
 

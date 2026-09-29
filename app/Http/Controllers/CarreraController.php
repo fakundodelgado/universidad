@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Carrera;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use App\Models\Materia;
+
 
 
 
@@ -17,7 +19,7 @@ class CarreraController extends Controller
      */
     public function index()
     {
-    $carreras = Carrera::all();
+    $carreras = Carrera::with('materias')->get();
     return Inertia::render('Carreras/Index', [
     'carreras' => $carreras,
     ]);
@@ -60,8 +62,12 @@ class CarreraController extends Controller
      */
     public function edit(Carrera $carrera)
     {
+
+    $carrera->load('materias');
+
     return Inertia::render('Carreras/Edit', [
     'carrera' => $carrera,
+    'materias' => Materia::orderBy('nombre')->get(),
     ]);
     }
 
@@ -70,7 +76,8 @@ class CarreraController extends Controller
      */
     public function update(Request $request, Carrera $carrera)
     {
-    $validated = $request->validate(['codigo' => [
+    $validated = $request->validate([
+    'codigo' => [
     'required',
     'string',
     'max:10',
@@ -78,9 +85,17 @@ class CarreraController extends Controller
     ],
     'nombre' => 'required|string|max:150',
     'estado' => 'required|boolean',
+    'materias' => 'array',
+    'materias.*' => 'integer|exists:materias,id',
     ]);
-    $carrera->update($validated);
-    return redirect()->route('carreras.index')
+    $carrera->update([
+    'codigo' => $validated['codigo'],
+    'nombre' => $validated['nombre'],
+    'estado' => $validated['estado'],
+    ]);
+    $carrera->materias()->sync($validated['materias'] ?? []);
+    return redirect()
+    ->route('carreras.index')
     ->with('success', 'Carrera actualizada correctamente.');
     }
 

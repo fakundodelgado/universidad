@@ -1,9 +1,15 @@
 import { Link, router } from '@inertiajs/react';
+interface Materia {
+ id: number;
+ codigo: string;
+ nombre: string;
+}
 interface Carrera {
  id: number;
  codigo: string;
  nombre: string;
  estado: boolean;
+ materias: Materia[];
 }
 interface Props {
  carreras: Carrera[];
@@ -37,6 +43,7 @@ router.delete(`/carreras/${id}`);
         <th>Nombre</th>
         <th>Estado</th>
         <th>Acciones</th>
+        <th>Materias</th>
     </tr>
  </thead>
  <tbody>
@@ -45,6 +52,9 @@ router.delete(`/carreras/${id}`);
         <td>{carrera.codigo}</td>
         <td>{carrera.nombre}</td>
         <td>{carrera.estado ? 'Activa' : 'Inactiva'}</td>
+        <td>
+        {carrera.materias.map((materia) => materia.codigo).join(', ')}
+        </td>
         <td>
         <Link href={`/carreras/${carrera.id}/edit`}>
         Editar

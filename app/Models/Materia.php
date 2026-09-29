@@ -10,5 +10,12 @@ class Materia extends Model
  protected $fillable = [
  'codigo', 'nombre', 'anio', 'cuatrimestre', 'estado'
  ];
+
+ public function carreras()
+{
+ return $this->belongsToMany(Carrera::class, 'carrera_materia')
+ ->withTimestamps();
+}
+
 }
 
