@@ -7,6 +7,9 @@ use App\Models\Carrera;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use App\Models\Materia;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
 
 
 
@@ -37,15 +40,29 @@ class CarreraController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
+
     {
+
     $validated = $request->validate([
     'codigo' => 'required|string|max:10|unique:carreras,codigo',
     'nombre' => 'required|string|max:150',
     'estado' => 'required|boolean',
     ]);
+
     Carrera::create($validated);
+
+    $data = array(
+        'name' => Auth::user()->name,
+        'email' => Auth::user()->email,
+        'carrera_nombre' => $validated['nombre'],
+        'carrera_codigo' => $validated['codigo']
+    );
+
+    Mail::to($data['email'])->send(new SendMail($data));
+
     return redirect()->route('carreras.index')
     ->with('success', 'Carrera creada correctamente.');
+
     }
 
 
