@@ -66,6 +66,8 @@ router.delete(`/carreras/${id}`);
         >
         Eliminar
         </button>
+         {' | '}
+        <Link href={`/carreras/${carrera.id}`}>Ver</Link>
         </td>
     </tr>
  ))}

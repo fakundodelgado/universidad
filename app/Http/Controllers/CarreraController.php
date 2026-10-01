@@ -69,9 +69,12 @@ class CarreraController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Carrera $carrera)
     {
-        //
+    $carrera->load('materias');
+    return Inertia::render('Carreras/Show', [
+    'carrera' => $carrera,
+    ]);
     }
 
     /**
