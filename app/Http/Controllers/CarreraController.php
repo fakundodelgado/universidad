@@ -15,17 +15,52 @@ use Illuminate\Support\Facades\Mail;
 
 
 
+
 class CarreraController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-    $carreras = Carrera::with('materias')->get();
+
+    $buscar = trim($request->input('buscar', ''));
+    $materia = $request->input('materia', '');
+    $orden = $request->input('orden', 'nombre');
+    $direccion = $request->input('direccion', 'asc');
+    $camposPermitidos = ['codigo', 'nombre', 'estado'];
+
+    if (!in_array($orden, $camposPermitidos, true)) {
+    $orden = 'nombre';
+    }
+
+    if (!in_array($direccion, ['asc', 'desc'], true)) {
+    $direccion = 'asc';
+    }
+
+    $carreras = Carrera::with('materias')
+    ->when($buscar !== '', function ($query) use ($buscar) {
+        $query->where('nombre', 'like', "%{$buscar}%");
+    })
+    ->when($request->filled('materia'), function ($query) use ($materia) {
+        $query->whereHas('materias', function ($q) use ($materia) {
+            $q->where('materias.id', $materia);
+    });
+    })
+    ->orderBy($orden, $direccion)
+    ->get();
+
     return Inertia::render('Carreras/Index', [
     'carreras' => $carreras,
+    'materias' => Materia::orderBy('nombre')->get(),
+    'filtros' => [
+    'buscar' => $buscar,
+    'materia' => $materia,
+    'orden' => $orden,
+    'direccion' => $direccion,
+    ],
     ]);
+
     }
 
     /**
