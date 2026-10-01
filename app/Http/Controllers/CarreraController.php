@@ -28,7 +28,12 @@ class CarreraController extends Controller
     $materia = $request->input('materia', '');
     $orden = $request->input('orden', 'nombre');
     $direccion = $request->input('direccion', 'asc');
+    $porPagina = (int) $request->input('por_pagina', 5);
     $camposPermitidos = ['codigo', 'nombre', 'estado'];
+
+    if (!in_array($porPagina, [5, 10, 20], true)) {
+    $porPagina = 5;
+    }
 
     if (!in_array($orden, $camposPermitidos, true)) {
     $orden = 'nombre';
@@ -48,7 +53,8 @@ class CarreraController extends Controller
     });
     })
     ->orderBy($orden, $direccion)
-    ->get();
+    ->paginate($porPagina)
+    ->withQueryString();
 
     return Inertia::render('Carreras/Index', [
     'carreras' => $carreras,
@@ -58,6 +64,7 @@ class CarreraController extends Controller
     'materia' => $materia,
     'orden' => $orden,
     'direccion' => $direccion,
+    'por_pagina' => $porPagina,
     ],
     ]);
 
@@ -93,7 +100,8 @@ class CarreraController extends Controller
         'carrera_codigo' => $validated['codigo']
     );
 
-    Mail::to($data['email'])->send(new SendMail($data));
+    // Para no estar enviando mail cada 2 por 3 puedo simplemente comentar esta linea.
+    //Mail::to($data['email'])->send(new SendMail($data));
 
     return redirect()->route('carreras.index')
     ->with('success', 'Carrera creada correctamente.');
