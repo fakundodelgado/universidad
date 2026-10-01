@@ -26,7 +26,18 @@ class RelacionesSeeder extends Seeder
     $ayed->id,
     $paw->id,
     ]);
- // Se completará cuando trabajemos las relaciones N:M.
+ 
+   Profesor::find(1)?->materias()->attach([$ayed->id, $so->id]);
+   Profesor::find(2)?->materias()->attach([$paw->id, $bd->id]);
+   Profesor::find(3)?->materias()->attach([$ayed->id, $paw->id]);
+   Profesor::find(4)?->materias()->attach([$bd->id, $so->id]);
+   Profesor::find(5)?->materias()->attach([$ayed->id, $bd->id]);
+   Profesor::find(6)?->materias()->attach([$paw->id, $so->id]);
+   Profesor::find(7)?->materias()->attach([$ayed->id]);
+   Profesor::find(8)?->materias()->attach([$bd->id]);
+   Profesor::find(9)?->materias()->attach([$paw->id]);
+   Profesor::find(10)?->materias()->attach([$so->id]);
+
  }
 }
 

@@ -13,4 +13,10 @@ class Profesor extends Model
  'email',
  'estado',
  ];
+
+  public function materias()
+{
+    return $this->belongsToMany(Materia::class);
+}   
+
 }

@@ -17,5 +17,10 @@ class Materia extends Model
  ->withTimestamps();
 }
 
+ public function profesores()
+{
+    return $this->belongsToMany(Profesor::class);
+}
+
 }
 
