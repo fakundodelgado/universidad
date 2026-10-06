@@ -98,6 +98,21 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
         return direccion === 'asc' ? ' ↑' : ' ↓';
     };
 
+    const handleExportExcel = () => {
+        // Creamos la query string basándonos en los filtros actuales de la vista
+        // Ignoramos 'por_pagina' porque el Excel debe bajar todas las filas filtradas,
+        //no solo 5 o 10
+        const params = new URLSearchParams({
+            buscar: filtros.buscar || '',
+            materia: filtros.materia || '',
+            orden: filtros.orden || 'nombre',
+            direccion: filtros.direccion || 'asc',
+        }).toString();
+        // Redirección nativa para iniciar la descarga del binario
+        window.location.href = `/carreras/export?${params}`;
+    };
+
+
     return (
         <div>
             <h1>Carreras</h1>
@@ -130,8 +145,22 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
                     ))}
                 </select>
                 <button type="submit">Buscar</button>
+                <button
+                    onClick={handleExportExcel}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm
+font-semibold text-white bg-emerald-600 rounded-lg shadow hover:bg-emerald-500
+transition-colors"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor"
+                        strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0
+0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414
+5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Exportar a Excel
+                </button>
                 <label>
-                      Mostrar:
+                    Mostrar:
                     <select
                         value={porPagina}
                         onChange={(e) => setPorPagina(Number(e.target.value))}
@@ -157,8 +186,8 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
                         <th onClick={() => ordenarPor('estado')}>
                             Estado{indicadorOrden('estado')}
                         </th>
-                        <th>Acciones</th>
                         <th>Materias</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,15 +211,22 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
                                     Eliminar
                                 </button>
                                 {' | '}
-                                <Link href={`/carreras/${carrera.id}`}>Ver</Link>
+                                <Link href={`/carreras/${carrera.id}`}>Materias</Link>
+                                {' | '}
+                                <a
+                                    href={`/carreras/${carrera.id}/plan`}
+                                    title="Descargar plan de estudio"
+                                    target="_blank" // Lo abre en una nueva pestaña.
+                                >
+                                    Plan
+                                </a>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            
+
             <div>
-                {/* Botón Anterior */}
                 {carreras.prev_page_url && (
                     <button
                         type="button"
@@ -200,7 +236,6 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
                     </button>
                 )}
 
-                {/* Números de página centrales */}
                 {carreras.links
                     .filter((link) => !link.label.includes('Previous') && !link.label.includes('Next'))
                     .map((link, index) => (
@@ -215,9 +250,8 @@ export default function Index({ carreras, materias, filtros, flash }: Props) {
                                 link.label
                             )}
                         </button>
-                ))}
+                    ))}
 
-                {/* Botón Siguiente */}
                 {carreras.next_page_url && (
                     <button
                         type="button"
