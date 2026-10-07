@@ -12,15 +12,16 @@ class Materia extends Model
  ];
 
  public function carreras()
-{
- return $this->belongsToMany(Carrera::class, 'carrera_materia')
- ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Carrera::class, 'carrera_materia')
+                    ->withTimestamps();
+    }
 
- public function profesores()
-{
-    return $this->belongsToMany(Profesor::class);
-}
+    public function profesores()
+    {
+        return $this->belongsToMany(Profesor::class, 'materia_profesor')
+                    ->withTimestamps();
+    }
 
 }
 

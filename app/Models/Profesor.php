@@ -14,9 +14,18 @@ class Profesor extends Model
  'estado',
  ];
 
+public function materias()
+    {
+        return $this->belongsToMany(Materia::class, 'materia_profesor')
+                    ->withTimestamps();
+    }
+
+/*
   public function materias()
 {
     return $this->belongsToMany(Materia::class);
-}   
+} 
+
+*/
 
 }
