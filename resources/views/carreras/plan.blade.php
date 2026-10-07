@@ -30,6 +30,7 @@
 <body>
     <h1>Plan de estudio</h1>
     <h2>{{ $carrera->nombre }}</h2>
+    <p><strong>Fecha de generación:</strong> {{ now()->format('d/m/Y') }}</p>
     <table>
         <thead>
             <tr>
@@ -46,6 +47,11 @@
             @endforeach
         </tbody>
     </table>
+
+    <div class="resumen">
+        <p><strong>Cantidad total de materias:</strong> {{ $carrera->materias->count() }}</p>
+    </div>
+
 </body>
 
 </html>

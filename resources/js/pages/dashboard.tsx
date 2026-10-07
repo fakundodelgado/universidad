@@ -64,6 +64,12 @@ interface DistribucionAnio {
   value: number;
 }
 
+// Interfaz para la actividad práctica (Profesores por Materia)
+interface ProfesorPorMateria {
+  nombre: string;
+  profesores: number;
+}
+
 interface DashboardProps {
   metrics?: {
     total_carreras: number;
@@ -74,6 +80,7 @@ interface DashboardProps {
   carreras?: Carrera[];
   materiasPorAnio?: DistribucionAnio[];
   materias?: Materia[];
+  profesoresPorMateria?: ProfesorPorMateria[];
 }
 
 // Paleta de colores adaptada a modo oscuro
@@ -83,10 +90,11 @@ export default function Dashboard({
   metrics = { total_carreras: 0, carreras_activas: 0, total_materias: 0, total_profesores: 0 }, 
   carreras = [], 
   materiasPorAnio = [],
-  materias = [] 
+  materias = [],
+  profesoresPorMateria = []
 }: DashboardProps) {
 
-  // Mapeo para el gráfico de barras
+  // Mapeo para el gráfico de materias por carrera
   const barChartData = carreras.map((c) => ({
     name: c.codigo,
     materias: c.materias_count ?? 0,
@@ -164,100 +172,94 @@ export default function Dashboard({
 
         {/* Sección de Gráficos (Barras + Torta) */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          {/* Gráfico de Barras */}
+          {/* Gráfico de Barras: Materias por Carrera */}
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Materias por Carrera</CardTitle>
+              <CardDescription>Cantidad de asignaturas vinculadas a cada plan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                    <XAxis dataKey="name" stroke="#a1a1aa" fontSize={12} />
+                    <YAxis stroke="#a1a1aa" fontSize={12} allowDecimals={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
+                      labelStyle={{ color: '#fafafa', fontWeight: 600 }}
+                    />
+                    <Bar dataKey="materias" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Materias" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* Gráfico de Torta / Donut: Materias por Año */}
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Materias por Año</CardTitle>
+              <CardDescription>Distribución curricular por nivel académico</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={materiasPorAnio}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {materiasPorAnio.map((_, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={PIE_COLORS[index % PIE_COLORS.length]} 
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fafafa' }}
+                    />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Tarjeta contenedora del gráfico de barras (ocupa 4 columnas en el grid) */}
-            <Card className="col-span-4">
-              {/* Encabezado de la tarjeta con título y descripción */}
-              <CardHeader>
-                <CardTitle>Materias por Carrera</CardTitle>
-                <CardDescription>Cantidad de asignaturas vinculadas a cada plan</CardDescription>
-              </CardHeader>
-              
-              {/* Cuerpo principal de la tarjeta */}
-              <CardContent>
-                {/* Contenedor con altura fija e igual ancho para el gráfico */}
-                <div className="h-72 w-full">
-                  {/* Hace que el gráfico adapte automáticamente su tamaño al contenedor padre */}
-                  <ResponsiveContainer width="100%" height="100%">
-                    {/* Gráfico de barras alimentado por barChartData */}
-                    <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      {/* Grilla de fondo con líneas punteadas para facilitar la lectura */}
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                      
-                      {/* Eje X: Muestra el código/nombre de la carrera */}
-                      <XAxis dataKey="name" stroke="#a1a1aa" fontSize={12} />
-                      
-                      {/* Eje Y: Muestra la escala numérica (solo números enteros) */}
-                      <YAxis stroke="#a1a1aa" fontSize={12} allowDecimals={false} />
-                      
-                      {/* Tooltip flotante con estilos personalizados para modo oscuro */}
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
-                        labelStyle={{ color: '#fafafa', fontWeight: 600 }}
-                      />
-                      
-                      {/* Configuración de las barras: campo de datos, color azul y bordes superiores redondeados */}
-                      <Bar dataKey="materias" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Materias" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-
-
-          {/* Gráfico de Torta / Donut */}
-         {/* Tarjeta contenedora del gráfico de dona (ocupa 3 columnas en la grilla) */}
-        <Card className="col-span-3">
-          {/* Encabezado de la tarjeta con título y descripción */}
+        {/* TERCER GRÁFICO (ACTIVIDAD PRÁCTICA): Profesores por Materia */}
+        <Card className="w-full">
           <CardHeader>
-            <CardTitle>Materias por Año</CardTitle>
-            <CardDescription>Distribución curricular por nivel académico</CardDescription>
+            <CardTitle>Profesores por Materia</CardTitle>
+            <CardDescription>
+              Cantidad de docentes asignados a cada cátedra (Relación N:M)
+            </CardDescription>
           </CardHeader>
-          
-          {/* Cuerpo principal de la tarjeta */}
           <CardContent>
-            {/* Contenedor con altura fija e igual ancho para el gráfico */}
             <div className="h-72 w-full">
-              {/* Mantiene la adaptabilidad del gráfico al tamaño del contenedor padre */}
               <ResponsiveContainer width="100%" height="100%">
-                {/* Componente principal para gráficos circulares */}
-                <PieChart>
-                  {/* Configuración de la estructura del gráfico circulares/dona */}
-                  <Pie
-                    data={materiasPorAnio}             /* Fuente de datos (ej: [{ name: 'Año 1', value: 10 }]) */
-                    cx="50%"                            /* Posición X centrada */
-                    cy="50%"                            /* Posición Y centrada */
-                    innerRadius={55}                    /* Radio interno para crear el hueco de la dona */
-                    outerRadius={80}                    /* Radio externo de las porciones */
-                    paddingAngle={5}                    /* Espaciado en grados entre cada sección */
-                    dataKey="value"                     /* Propiedad que contiene el valor numérico */
-                  >
-                    {/* Iteración para aplicar colores únicos a cada porción */}
-                    {materiasPorAnio.map((_, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={PIE_COLORS[index % PIE_COLORS.length]} /* Alterna colores del array PIE_COLORS */
-                      />
-                    ))}
-                  </Pie>
-                  
-                  {/* Tooltip flotante con diseño adaptado a modo oscuro */}
+                <BarChart data={profesoresPorMateria} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                  <XAxis dataKey="nombre" stroke="#a1a1aa" fontSize={12} />
+                  <YAxis stroke="#a1a1aa" fontSize={12} allowDecimals={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fafafa' }}
+                    labelStyle={{ color: '#fafafa', fontWeight: 600 }}
+                    formatter={(value: any) => [`${value} asignados`, 'Profesores']}
                   />
-                  
-                  {/* Leyenda inferior que relaciona los colores con los nombres/años */}
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                </PieChart>
+                  <Bar dataKey="profesores" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Profesores" />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-        </div>
 
         {/* Tablas de Carreras y Materias */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
