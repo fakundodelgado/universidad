@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProfesorRequest;
+use App\Http\Requests\UpdateProfesorRequest;
 use App\Models\Materia;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProfesorController extends Controller
@@ -78,17 +79,9 @@ class ProfesorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProfesorRequest $request)
     {
-        $validated = $request->validate([
-            'dni' => 'required|string|max:20|unique:profesores,dni',
-            'apellido' => 'required|string|max:100',
-            'nombre' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:profesores,email',
-            'estado' => 'required|boolean',
-            'materias' => 'array',
-            'materias.*' => 'integer|exists:materias,id',
-        ]);
+        $validated = $request->validated();
 
         $profesor = Profesor::create([
             'dni' => $validated['dni'],
@@ -133,27 +126,9 @@ class ProfesorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Profesor $profesor)
+    public function update(UpdateProfesorRequest $request, Profesor $profesor)
     {
-        $validated = $request->validate([
-            'dni' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('profesores', 'dni')->ignore($profesor->id),
-            ],
-            'apellido' => 'required|string|max:100',
-            'nombre' => 'required|string|max:100',
-            'email' => [
-                'required',
-                'email',
-                'max:150',
-                Rule::unique('profesores', 'email')->ignore($profesor->id),
-            ],
-            'estado' => 'required|boolean',
-            'materias' => 'array',
-            'materias.*' => 'integer|exists:materias,id',
-        ]);
+        $validated = $request->validated();
 
         $profesor->update([
             'dni' => $validated['dni'],
