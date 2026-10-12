@@ -13,12 +13,15 @@ use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\CarrerasExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 
 class CarreraController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    #[Middleware('permission:listar carreras')]
     public function index(Request $request)
     {
 
@@ -71,6 +74,8 @@ class CarreraController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+
+    #[Middleware('permission:crear carreras')]
     public function create()
     {
         return Inertia::render('Carreras/Create');
@@ -79,6 +84,8 @@ class CarreraController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    #[Middleware('permission:crear carreras')]
     public function store(Request $request)
     {
 
@@ -109,6 +116,8 @@ class CarreraController extends Controller
     /**
      * Display the specified resource.
      */
+
+    #[Middleware('permission:ver carreras')]
     public function show(Carrera $carrera)
     {
         $carrera->load('materias');
@@ -120,6 +129,8 @@ class CarreraController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+
+    #[Middleware('permission:editar carreras')]
     public function edit(Carrera $carrera)
     {
 
@@ -134,6 +145,8 @@ class CarreraController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
+    #[Middleware('permission:editar carreras')]
     public function update(Request $request, Carrera $carrera)
     {
         $validated = $request->validate([
@@ -162,6 +175,8 @@ class CarreraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
+    #[Middleware('permission:eliminar carreras')]
     public function destroy(Carrera $carrera)
     {
         $carrera->delete();
@@ -169,6 +184,7 @@ class CarreraController extends Controller
             ->with('success', 'Carrera eliminada correctamente.');
     }
 
+    #[Middleware('permission:descargar reportes')]
     public function plan(Carrera $carrera)
     {
         $carrera->load('materias');
@@ -182,6 +198,7 @@ class CarreraController extends Controller
         // Stream evita forzar la descarga y poder redireccionar a una nueva pestaña para visualizar el pdf.
     }
 
+    #[Middleware('permission:descargar reportes')]
     public function export(Request $request)
     {
         $buscar = trim($request->input('buscar', ''));

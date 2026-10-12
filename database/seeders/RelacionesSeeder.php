@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Carrera;
 use App\Models\Materia;
+use App\Models\Profesor;
 use Illuminate\Database\Seeder;
 class RelacionesSeeder extends Seeder
 {
