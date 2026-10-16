@@ -21,6 +21,7 @@ class StoreProfesorRequest extends FormRequest
             'estado' => ['required', 'boolean'],
             'materias' => ['nullable', 'array'],
             'materias.*' => ['integer', 'exists:materias,id'],
+            'foto'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], // máx 2MB
         ];
     }
 
@@ -28,7 +29,10 @@ class StoreProfesorRequest extends FormRequest
     {
         return [
             'dni' => 'DNI',
+            'apellido' => 'apellido',
+            'nombre'   => 'nombre',
             'email' => 'correo electrónico',
+            'estado'   => 'estado',
         ];
     }
 
@@ -38,6 +42,8 @@ class StoreProfesorRequest extends FormRequest
             'required' => 'El campo :attribute es obligatorio.',
             'unique' => 'El :attribute ingresado ya pertenece a otro profesor.',
             'email' => 'El :attribute debe ser una dirección de correo válida.',
+            'max'      => 'El campo :attribute no debe superar los :max caracteres.',
+            'boolean'  => 'El campo :attribute debe ser verdadero o falso.',
         ];
     }
 }

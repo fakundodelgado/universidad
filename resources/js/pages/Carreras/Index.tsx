@@ -43,7 +43,9 @@ import {
     ChevronLeft,
     ChevronRight,
     Loader2,
+    Eye,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 interface Materia {
     id: number;
@@ -96,6 +98,7 @@ interface Props {
 }
 
 export default function Index({ carreras, materias, filtros }: Props) {
+    const { can } = useAuth();
     const [buscar, setBuscar] = useState(filtros.buscar ?? '');
     const [materia, setMateria] = useState(filtros.materia ?? 'all');
     const [orden, setOrden] = useState(filtros.orden ?? 'nombre');
@@ -171,12 +174,23 @@ export default function Index({ carreras, materias, filtros }: Props) {
                     <h1 className="text-2xl font-bold tracking-tight text-gray-900">Carreras</h1>
                     <p className="text-sm text-gray-500 mt-1">Gestión y listado de las carreras del sistema.</p>
                 </div>
+                                {can('crear carreras') && (
+                <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white
+                shadow-sm">
+                <Link href="/carreras/create">
+                <Plus className="w-4 h-4 mr-2" />
+                Nueva carrera
+                </Link>
+                </Button>)}
+
+                {/* 
                 <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">
                     <Link href="/carreras/create">
                         <Plus className="w-4 h-4 mr-2" />
                         Nueva carrera
                     </Link>
                 </Button>
+                */}
             </div>
 
             {/* SECCIÓN DE FILTROS */}
@@ -392,19 +406,21 @@ export default function Index({ carreras, materias, filtros }: Props) {
                                                     Eliminar
                                                 </Button>
 
-                                                {/* Materias */}
+                                                {/* Materias ACA DE BORRA... */}
+
+                                                {can('ver carreras') && (
                                                 <Button
-                                                    asChild
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-8 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                                                    title="Ver materias de la carrera"
+                                                asChild
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 text-slate-600 hover:text-slate-900"
+                                                title="Ver detalles de la carrera"
                                                 >
-                                                    <Link href={`/carreras/${carrera.id}`}>
-                                                        <BookOpen className="w-4 h-4 mr-1.5" />
-                                                        Materias
-                                                    </Link>
-                                                </Button>
+                                                <Link href={`/carreras/${carrera.id}`}>
+                                                <Eye className="w-4 h-4 mr-1.5" />
+                                                Ver
+                                                </Link>
+                                                </Button>)}
 
                                                 {/* PDF */}
                                                 <Button

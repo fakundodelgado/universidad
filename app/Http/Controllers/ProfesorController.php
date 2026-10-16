@@ -8,6 +8,9 @@ use App\Models\Materia;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\RedirectResponse;
 
 class ProfesorController extends Controller
 {
@@ -83,6 +86,13 @@ class ProfesorController extends Controller
     {
         $validated = $request->validated();
 
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('profesores', 'public');
+        }
+
+        Profesor::create($validated);
+
+        /*
         $profesor = Profesor::create([
             'dni' => $validated['dni'],
             'apellido' => $validated['apellido'],
@@ -90,8 +100,9 @@ class ProfesorController extends Controller
             'email' => $validated['email'],
             'estado' => $validated['estado'],
         ]);
+        */
 
-        $profesor->materias()->sync($validated['materias'] ?? []);
+        //$profesor->materias()->sync($validated['materias'] ?? []);
 
         return redirect()
             ->route('profesores.index')
@@ -130,6 +141,20 @@ class ProfesorController extends Controller
     {
         $validated = $request->validated();
 
+        if ($request->hasFile('foto')) {
+            // Borra la imagen previa del disco para no acumular archivos huérfanos
+            if ($profesor->foto && Storage::disk('public')->exists($profesor->foto)) {
+                Storage::disk('public')->delete($profesor->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('profesores', 'public');
+        } else {
+            // Si no enviaron foto nueva, no sobreescribe con null
+            unset($validated['foto']);
+        }
+
+        $profesor->update($validated);
+
+        /*
         $profesor->update([
             'dni' => $validated['dni'],
             'apellido' => $validated['apellido'],
@@ -137,6 +162,7 @@ class ProfesorController extends Controller
             'email' => $validated['email'],
             'estado' => $validated['estado'],
         ]);
+        */
 
         $profesor->materias()->sync($validated['materias'] ?? []);
 
@@ -150,6 +176,11 @@ class ProfesorController extends Controller
      */
     public function destroy(Profesor $profesor)
     {
+        if ($profesor->foto && Storage::disk('public')->exists($profesor->foto)) {
+            Storage::disk('public')->delete($profesor->foto);
+        }
+
+
         $profesor->delete();
 
         return redirect()

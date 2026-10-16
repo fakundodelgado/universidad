@@ -27,6 +27,7 @@ interface Profesor {
     nombre: string;
     email: string;
     estado: boolean;
+    foto_url?: string; // 1. Agregado el campo de la URL
     materias: Materia[];
 }
 
@@ -205,6 +206,8 @@ export default function Index({ profesores, materias = [], filtros, flash }: Pro
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    {/* 2. Cabecera para la foto */}
+                                    <TableHead className="w-[80px]">Foto</TableHead>
                                     <TableHead className="w-[120px] cursor-pointer select-none" onClick={() => ordenarPor('dni')}>
                                         DNI {indicadorOrden('dni')}
                                     </TableHead>
@@ -227,6 +230,20 @@ export default function Index({ profesores, materias = [], filtros, flash }: Pro
                             <TableBody>
                                 {profesores?.data?.map((profesor) => (
                                     <TableRow key={profesor.id}>
+                                        {/* 3. Renderizado de la foto o iniciales */}
+                                        <TableCell>
+                                            {profesor.foto_url ? (
+                                                <img 
+                                                    src={profesor.foto_url} 
+                                                    alt={profesor.nombre} 
+                                                    className="w-10 h-10 rounded-full object-cover border border-zinc-700" 
+                                                />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center justify-center font-bold text-xs uppercase">
+                                                    {profesor.nombre?.[0] ?? ''}{profesor.apellido?.[0] ?? ''}
+                                                </div>
+                                            )}
+                                        </TableCell>
                                         <TableCell className="font-mono text-xs">{profesor.dni}</TableCell>
                                         <TableCell className="font-medium">{profesor.apellido}</TableCell>
                                         <TableCell>{profesor.nombre}</TableCell>

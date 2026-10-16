@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import type { FormEvent } from 'react';
-import { ArrowLeft, UserPlus, BookOpen } from 'lucide-react';
+import { useState, type FormEvent, type ChangeEvent } from 'react';
+import { ArrowLeft, UserPlus, BookOpen, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +22,22 @@ export default function Create({ materias }: Props) {
         nombre: '',
         email: '',
         estado: true,
+        foto: null as File | null,
         materias: [] as number[],
     });
+
+    const [preview, setPreview] = useState<string | null>(null);
+
+     const handleFotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setData('foto', file);
+
+        if (file) {
+            setPreview(URL.createObjectURL(file));
+        } else {
+            setPreview(null);
+        }
+    };
 
     const cambiarMateria = (id: number, seleccionada: boolean) => {
         if (seleccionada) {
@@ -116,6 +130,38 @@ export default function Create({ materias }: Props) {
                                     className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                 />
                                 {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
+                            </div>
+
+                            {/* Campo Foto de Perfil */}
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium">Foto de Perfil</label>
+                                <div className="flex items-center gap-4">
+                                    {preview ? (
+                                        <img
+                                            src={preview}
+                                            alt="Previsualización"
+                                            className="w-16 h-16 rounded-full object-cover border border-zinc-700 shadow-sm"
+                                        />
+                                    ) : (
+                                        <div className="w-16 h-16 rounded-full bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-zinc-500">
+                                            <Upload className="w-6 h-6" />
+                                        </div>
+                                    )}
+
+                                    <div className="flex-1">
+                                        <input
+                                            type="file"
+                                            id="foto"
+                                            accept="image/jpeg,image/png,image/jpg,image/webp"
+                                            onChange={handleFotoChange}
+                                            className="w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
+                                        />
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Formatos permitidos: JPG, PNG, WEBP. Máximo 2MB.
+                                        </p>
+                                    </div>
+                                </div>
+                                {errors.foto && <p className="text-xs text-red-400">{errors.foto}</p>}
                             </div>
 
                             <div className="flex items-center gap-2 pt-2">

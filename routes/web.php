@@ -5,6 +5,9 @@ use App\Http\Controllers\CarreraController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
 
 Route::inertia('/', 'welcome')->name('home');
 
@@ -21,6 +24,14 @@ Route::resource('profesores', ProfesorController::class)->parameters([
 Route::resource('materias', MateriaController::class)->parameters([
     'materias' => 'materia'
 ]);
+
+Route::resource('roles', RoleController::class);
+
+Route::resource('permissions', PermissionController::class)->except(['show',
+'edit', 'create']);
+
+Route::resource('users', UserController::class);
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
