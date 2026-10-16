@@ -90,7 +90,7 @@ class ProfesorController extends Controller
             $validated['foto'] = $request->file('foto')->store('profesores', 'public');
         }
 
-        Profesor::create($validated);
+        $profesor = Profesor::create($validated);
 
         /*
         $profesor = Profesor::create([
@@ -102,7 +102,7 @@ class ProfesorController extends Controller
         ]);
         */
 
-        //$profesor->materias()->sync($validated['materias'] ?? []);
+        $profesor->materias()->sync($validated['materias'] ?? []);
 
         return redirect()
             ->route('profesores.index')

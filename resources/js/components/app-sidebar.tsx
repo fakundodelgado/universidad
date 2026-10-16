@@ -47,7 +47,18 @@ const mainNavItems: NavItem[] = [
         icon: Book,
         permission: 'listar carreras',
     },
+    {
+        title: 'Profesores',
+        href: '/profesores',
+        icon: Book,
+    },
+    {
+        title: 'Materias',
+        href: '/materias',
+        icon: Book,
+    },
 ];
+
 
 const footerNavItems: NavItem[] = [
     {
